@@ -27,15 +27,15 @@ const CustomInput = ({ status }) => {
     <>
       {!isShow ? (
         <div className="px-2">
-        <div
-          onClick={() => setIsShow(true)}
-          className="mt-1 px-2 cursor-pointer hover:bg-[#dadbe2] py-2  rounded"
-        >
-          <button className="flex items-center text-[#6B7180]">
-            <BsPlus className="text-[#6B7180] font-medium text-2xl" />
-            Add Card
-          </button>
-        </div>
+          <div
+            onClick={() => setIsShow(true)}
+            className="mt-1 px-2 cursor-pointer hover:bg-[#dadbe2] py-2  rounded"
+          >
+            <button className="flex items-center text-[#6B7180]">
+              <BsPlus className="text-[#6B7180] font-medium text-2xl" />
+              Add Card
+            </button>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="w-full h-full px-1 relative">
@@ -43,11 +43,11 @@ const CustomInput = ({ status }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
-            className="w-full pt-2 h-[80px] px-2  round resize-none rounded-lg"
+            className="w-full pt-2 h-[80px] px-2  round resize-none rounded-lg outline-none text-sm"
             placeholder="Enter a title for this card"
           />
           <div className="flex items-center gap-3 mt-3">
-            <button className="bg-[#0A65E4] py-1 px-2 rounded-sm text-white">
+            <button className="bg-[#0079bf] py-1 px-2 rounded-sm text-white">
               Add Card
             </button>
             <button onClick={() => setIsShow(false)} className="">

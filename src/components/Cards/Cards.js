@@ -1,27 +1,26 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import { BsPlus, BsThreeDots } from "react-icons/bs";
 import { VscClose } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCartItem, handleStatus } from "../../redux/cardSlice";
+import { deleteCartItem, handleSortableList, handleStatus } from "../../redux/cardSlice";
 import CustomInput from "../CustomInput/CustomInput";
+import ClickAwayListener from "react-click-away-listener";
 
-const a = [
-  {
-    cards: [{ title: "Hello" }, { title: "Bye" }],
-  },
-  {
-    cards: { title: "Bye" },
-  },
-];
 export const Cards = () => {
   const { cards } = useSelector((state) => state.boards);
   const [tasks, setTasks] = useState({ todo: [], backlog: [], progress: [] });
   const dispatch = useDispatch();
   const [items, setItems] = useState(cards);
+  const [isShowInput, setIsShowInput] = useState(false)
+  let dragItem = useRef(null);
+  let dragOverItem = useRef(null);
+
   useEffect(() => {
     setItems(cards);
   }, [cards]);
+
+
   useEffect(() => {
     const todo = items?.filter((item) => item.status === "todo");
     const backlog = items?.filter((item) => item.status === "backlog");
@@ -29,14 +28,14 @@ export const Cards = () => {
     setTasks({ todo: todo, backlog: backlog, progress: progress });
   }, [items]);
 
-  console.log(items);
+
   const handleDelete = (id) => {
     dispatch(deleteCartItem(id));
   };
 
-  const handleDragStart = (e, title) => {
-    e.dataTransfer.setData("id", title);
-    console.log(title);
+  const handleDragStart = (e, item) => {
+    e.dataTransfer.setData("id", item.title);
+    dragItem.current = item.id
   };
 
   const handleDrop = (e, st) => {
@@ -48,7 +47,16 @@ export const Cards = () => {
   const handleDragOver = (e) => {
     e.preventDefault();
   };
-  console.log(items);
+  const handleSort = () => {
+    let obj = { dragOverItem, dragItem }
+    dispatch(handleSortableList(obj))
+    dragOverItem.current = null;
+    dragItem.current = null;
+
+  }
+  const handleClickAway = () => {
+    setIsShowInput(false)
+  }
   return (
     <div className="flex items-start gap-3">
       <div
@@ -57,14 +65,22 @@ export const Cards = () => {
         className="py-2  pb-3 max-w-80 px-2 bg-[#EBECF0] rounded-lg"
       >
         <div className="w-30 px-1   min-w-[18rem] max-w-xs  ">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-semibold text-[#374151] pt-1 pb-2">Backlog</h3>
+          <div className="flex justify-between items-center mb-2" >
+         
+              <h3 className="font-semibold text-[#374151] pt-1 pb-2">Backlog</h3>
+
+         
+
+            {/* {isShowInput && <input className="w-[100%] p-1" value="Backlog" />} */}
+
             <BsThreeDots />
           </div>
           {tasks?.backlog?.map((item) => (
             <div
+              onDragEnd={handleSort}
+              onDragEnter={() => dragOverItem.current = item.id}
               draggable
-              onDragStart={(e) => handleDragStart(e, item.title)}
+              onDragStart={(e) => handleDragStart(e, item)}
               key={item.id}
               className="py-4 px-1 cursor-pointer transition bg-white rounded-lg mb-2 relative group"
             >
@@ -93,8 +109,10 @@ export const Cards = () => {
           </div>
           {tasks?.todo?.map((item) => (
             <div
+              onDragEnd={handleSort}
+              onDragEnter={() => dragOverItem.current = item.id}
               draggable
-              onDragStart={(e) => handleDragStart(e, item.title)}
+              onDragStart={(e) => handleDragStart(e, item)}
               key={item.id}
               className="py-4 px-1 cursor-pointer transition bg-white rounded-lg mb-2 relative group"
             >
@@ -125,8 +143,10 @@ export const Cards = () => {
           </div>
           {tasks?.progress?.map((item) => (
             <div
-            onDragStart={(e) => handleDragStart(e, item.title)}
-            draggable
+              onDragEnd={handleSort}
+              onDragEnter={() => dragOverItem.current = item.id}
+              onDragStart={(e) => handleDragStart(e, item)}
+              draggable
               key={item.id}
               className="py-2 h-10 px-2 cursor-pointer transition bg-white rounded-lg mb-2 relative group"
             >
