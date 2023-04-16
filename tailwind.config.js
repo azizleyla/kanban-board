@@ -18,6 +18,9 @@ module.exports = {
       backgroundImage: {
         'hero-pattern': "url('./assets/img/bg.jpg')",
 
+      },
+      colors: {
+        'black-rgba': "rgba(0,0,0,0.6)"
       }
     },
   },

@@ -6,13 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteCartItem, handleSortableList, handleStatus } from "../../redux/cardSlice";
 import CustomInput from "../CustomInput/CustomInput";
 import ClickAwayListener from "react-click-away-listener";
+import CardInfoModal from "../Modals/CardInfoModal";
 
 export const Cards = () => {
   const { cards } = useSelector((state) => state.boards);
   const [tasks, setTasks] = useState({ todo: [], backlog: [], progress: [] });
   const dispatch = useDispatch();
   const [items, setItems] = useState(cards);
-  const [isShowInput, setIsShowInput] = useState(false)
+  const [isShowModal, setIsShowModal] = useState(false)
+  const [selectedItem, setSelectedItem] = useState("")
   let dragItem = useRef(null);
   let dragOverItem = useRef(null);
 
@@ -54,8 +56,13 @@ export const Cards = () => {
     dragItem.current = null;
 
   }
-  const handleClickAway = () => {
-    setIsShowInput(false)
+  // const handleClickAway = () => {
+  //   setIsShowInput(false)
+  // }
+  const handleClick = (id) => {
+    setIsShowModal(true)
+    const selectedItem = items.find(item => item.id === id)
+    setSelectedItem(selectedItem)
   }
   return (
     <div className="flex items-start gap-3">
@@ -66,10 +73,10 @@ export const Cards = () => {
       >
         <div className="w-30 px-1   min-w-[18rem] max-w-xs  ">
           <div className="flex justify-between items-center mb-2" >
-         
-              <h3 className="font-semibold text-[#374151] pt-1 pb-2">Backlog</h3>
 
-         
+            <h3 className="font-semibold text-[#374151] pt-1 pb-2">Backlog</h3>
+
+
 
             {/* {isShowInput && <input className="w-[100%] p-1" value="Backlog" />} */}
 
@@ -77,6 +84,7 @@ export const Cards = () => {
           </div>
           {tasks?.backlog?.map((item) => (
             <div
+              onClick={() => handleClick(item.id)}
               onDragEnd={handleSort}
               onDragEnter={() => dragOverItem.current = item.id}
               draggable
@@ -162,6 +170,8 @@ export const Cards = () => {
         </div>
         <CustomInput status="in-progress" />
       </div>
+      <CardInfoModal isShowModal={isShowModal} setIsShowModal={setIsShowModal} selectedItem={selectedItem} />
+
     </div>
   );
 };
